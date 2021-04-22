@@ -5,4 +5,4 @@ configs: {}
 
 cloneJob:
   image: google/cloud-sdk:alpine
-  command: gcloud auth activate-service-account --key-file=/mnt/configs/sa_key.json && gsutil -m rsync -r -d /mnt/cloud.galaxyproject.org gs://cloud-cvmfs/
+  command: gcloud auth activate-service-account --key-file=/mnt/configs/sa_key.json && gsutil -m rsync -r -d /mnt/cvmfs/cloud.galaxyproject.org gs://cloud-cvmfs/

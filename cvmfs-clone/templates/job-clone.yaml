@@ -17,10 +17,10 @@ spec:
           command:
             - sh
             - "-c"
-            - "rsync -aP --exclude '*/.hg*' /cvmfs/cloud.galaxyproject.org/tools /mnt/cloud.galaxyproject.org/ && rsync -aP /cvmfs/cloud.galaxyproject.org/config /mnt/cloud.galaxyproject.org/ && tar -zcvf /mnt/cloud.galaxyproject.org/contents.tar.gz /mnt/cloud.galaxyproject.org/tools /mnt/cloud.galaxyproject.org/config"
+            - "rsync -aP --exclude '*/.hg*' /cvmfs/cloud.galaxyproject.org/tools /mnt/cvmfs/cloud.galaxyproject.org/ && rsync -aP /cvmfs/cloud.galaxyproject.org/config /mnt/cvmfs/cloud.galaxyproject.org/ && cd /mnt && tar -zcvf /mnt/cvmfs/cloud.galaxyproject.org/contents.tar.gz cvmfs/cloud.galaxyproject.org/tools cvmfs/cloud.galaxyproject.org/config"
           volumeMounts:
             - name: cloned-data
-              mountPath: /mnt/cloud.galaxyproject.org
+              mountPath: /mnt/cvmfs/cloud.galaxyproject.org
             - name: cvmfs-gxy-cloud
               mountPath: /cvmfs/cloud.galaxyproject.org
       containers:
@@ -32,7 +32,7 @@ spec:
             - "{{ .Values.cloneJob.command }}"
           volumeMounts:
             - name: cloned-data
-              mountPath: /mnt/cloud.galaxyproject.org
+              mountPath: /mnt/cvmfs/cloud.galaxyproject.org
             {{- range $key,$entry := .Values.configs }}
             {{ if $entry -}}
             - name: configs
