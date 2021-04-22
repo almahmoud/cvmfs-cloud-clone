@@ -4,5 +4,5 @@ fullnameOverride: ""
 configs: {}
 
 cloneJob:
-  image: google/cloud-sdk:latest
-  command: gcloud auth activate-service-account --key-file=/mnt/configs/sa_key.json && gsutil rsync -r -d /mnt/cloud.galaxyproject.org gs://cloud-cvmfs/
+  image: google/cloud-sdk:alpine
+  command: gcloud auth activate-service-account --key-file=/mnt/configs/sa_key.json && gsutil -m rsync -r -d /mnt/cloud.galaxyproject.org gs://cloud-cvmfs/
