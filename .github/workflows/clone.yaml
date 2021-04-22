@@ -1,4 +1,4 @@
-name: Run Linting and Deployment tests with and without CVMFS
+name: Clone CVMFS repository cloud.galaxyproject.org to Google buckets
 on:
   push: {}
   workflow_dispatch: {}
@@ -34,8 +34,5 @@ jobs:
           GCP_SA_KEY: ${{secrets.GCP_SA_KEY}}
       - run: helm get manifest cloud-clone
       - name: Get logs and events
-        run: timeout 1200 sh -c "while true; do kubectl get events > /tmp/events && tail /tmp/events && sleep 5 && kubectl logs $(kubectl get pods | grep -o 'cloud-clone-[^ ]*')  > /tmp/logs && tail /tmp/logs && sleep 5; done;"
-        continue-on-error: true
-      - name: Wait for job to complete
-        run: kubectl wait --for=condition=complete --timeout=6000s job/cloud-clone
+        run: sh -c "while true; do kubectl get events > /tmp/events && tail /tmp/events && sleep 5 && kubectl logs $(kubectl get pods | grep -o 'cloud-clone-[^ ]*')  > /tmp/logs && tail /tmp/logs && sleep 5; done;" & kubectl wait --for=condition=complete --timeout=6000s job/cloud-clone
         continue-on-error: true
