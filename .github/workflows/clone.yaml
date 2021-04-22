@@ -1,0 +1,41 @@
+name: Run Linting and Deployment tests with and without CVMFS
+on:
+  push: {}
+  workflow_dispatch: {}
+jobs:
+  clone:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Start k8s locally
+        uses: jupyterhub/action-k3s-helm@v1
+        with:
+          k3s-version: v1.19.10+k3s1 # releases:  https://github.com/k3s-io/k3s/tags
+      - name: Verify function of k8s, kubectl, and helm
+        run: |
+          echo "kubeconfig: $KUBECONFIG"
+          kubectl version
+          kubectl get pods --all-namespaces
+
+          helm version
+          helm list
+      - name: Helm repo add galaxy
+        run: helm repo add galaxy https://github.com/CloudVE/helm-charts/raw/master
+      - name: Helm install CVMFS-CSI
+        run: helm install --create-namespace -n csi-drivers gxy-cvmfs galaxy/galaxy-cvmfs-csi --set cache.preload.enabled=false --set cache.alienCache.enabled=false --set cache.localCache.enabled=true --set repositories.cvmfs-gxy-cloud="cloud.galaxyproject.org"
+      - name: Helm install clone jobs
+        run: echo "$GCP_SA_KEY" > /tmp/key && helm install cloud-clone ./cvmfs-clone --set-file configs."sa_key\.json"=/tmp/key
+        env:
+          GCP_SA_KEY: ${{secrets.GCP_SA_KEY}}
+      - run: helm get manifest cloud-clone
+      - name: Get logs and events
+        run: timeout 1200 sh -c "while true; do kubectl get events > /tmp/events && tail /tmp/events && sleep 5 && kubectl logs $(kubectl get pods | grep -o 'cloud-clone-[^ ]*')  > /tmp/logs && tail /tmp/logs && sleep 5; done;"
+        continue-on-error: true
+      - name: Wait for job to complete
+        run: kubectl wait --for=condition=complete --timeout=6000s job/cloud-clone
+        continue-on-error: true

@@ -1,0 +1,12 @@
+apiVersion: v1
+metadata:
+  name: cvmfs-clone-configs
+kind: Secret
+type: Opaque
+stringData:
+  {{- range $key, $entry := .Values.configs -}}
+  {{- if $entry -}}
+  {{- $key | nindent 2 }}: |
+    {{- $entry | nindent 4 -}}
+  {{- end -}}
+  {{- end -}}

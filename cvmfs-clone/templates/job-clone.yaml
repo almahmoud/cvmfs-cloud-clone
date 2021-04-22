@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cloud-clone
+spec:
+  ttlSecondsAfterFinished: 10
+  template:
+    metadata:
+      name: "cloud-clone"
+    spec:
+      securityContext:
+        runAsUser: 0
+      restartPolicy: OnFailure
+      initContainers:
+        - name: rsync-cloud-repo
+          image: eeacms/rsync:latest
+          command:
+            - sh
+            - "-c"
+            - "rsync -aP --exclude '*/.hg*' /cvmfs/cloud.galaxyproject.org/tools /mnt/cloud.galaxyproject.org/ && rsync -aP /cvmfs/cloud.galaxyproject.org/config /mnt/cloud.galaxyproject.org/ && tar -zcvf /mnt/cloud.galaxyproject.org/contents.tar.gz /mnt/cloud.galaxyproject.org/tools /mnt/cloud.galaxyproject.org/config"
+          volumeMounts:
+            - name: cloned-data
+              mountPath: /mnt/cloud.galaxyproject.org
+            - name: cvmfs-gxy-cloud
+              mountPath: /cvmfs/cloud.galaxyproject.org
+      containers:
+        - name: clone-cloud-repo
+          image: "{{ .Values.cloneJob.image }}"
+          command:
+            - sh
+            - "-c"
+            - "{{ .Values.cloneJob.command }}"
+          volumeMounts:
+            - name: cloned-data
+              mountPath: /mnt/cloud.galaxyproject.org
+            {{- range $key,$entry := .Values.configs }}
+            {{ if $entry -}}
+            - name: configs
+              mountPath: /mnt/configs/{{ $key }}
+              subPath: {{ $key }}
+            {{ end }}
+            {{ end }}
+      volumes:
+        - name: cloned-data
+          emptyDir: {}
+        - name: configs
+          secret:
+            secretName: cvmfs-clone-configs
+        - name: cvmfs-gxy-cloud
+          persistentVolumeClaim:
+            claimName: cvmfs-gxy-cloud-pvc
