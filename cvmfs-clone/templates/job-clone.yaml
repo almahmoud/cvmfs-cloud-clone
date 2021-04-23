@@ -19,7 +19,7 @@ spec:
           command:
             - sh
             - "-c"
-            - "rsync -aP --exclude '*/.hg*' /cvmfs/cloud.galaxyproject.org/tools /mnt/cvmfs/cloud.galaxyproject.org/ && rsync -aP /cvmfs/cloud.galaxyproject.org/config /mnt/cvmfs/cloud.galaxyproject.org/ && mkdir -p /startup/cvmfs/cloud.galaxyproject.org && rsync -amP --exclude='*-data/*' --include='*/' --include='*.xml' --exclude='*' /mnt/cvmfs/cloud.galaxyproject.org/tools /startup/cvmfs/cloud.galaxyproject.org/ && rsync -aP /mnt/cvmfs/cloud.galaxyproject.org/config /startup/cvmfs/cloud.galaxyproject.org/ && cd /startup && tar -zcvf /mnt/cvmfs/cloud.galaxyproject.org/startup.tar.gz cvmfs/cloud.galaxyproject.org"
+            - "rsync -aP --exclude '*/.hg*' /cvmfs/cloud.galaxyproject.org/tools /mnt/cvmfs/cloud.galaxyproject.org/ && rsync -aP /cvmfs/cloud.galaxyproject.org/config /mnt/cvmfs/cloud.galaxyproject.org/ && mkdir -p /startup/cvmfs/cloud.galaxyproject.org && rsync -amP --exclude='*-data/*' --include='*/' --include='*.xml' --exclude='*' /mnt/cvmfs/cloud.galaxyproject.org/tools /startup/cvmfs/cloud.galaxyproject.org/ && rsync -aP /mnt/cvmfs/cloud.galaxyproject.org/config /startup/cvmfs/cloud.galaxyproject.org/ && cd /mnt && tar -zcvf /mnt/cvmfs/cloud.galaxyproject.org/contents.tar.gz cvmfs/cloud.galaxyproject.org && cd ../startup && tar -zcvf /mnt/cvmfs/cloud.galaxyproject.org/startup.tar.gz cvmfs/cloud.galaxyproject.org"
           volumeMounts:
             - name: cloned-data
               mountPath: /mnt/cvmfs/cloud.galaxyproject.org
