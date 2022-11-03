@@ -16,7 +16,7 @@ jobs:
           python-version: '3.x'
 
       - name: Start K8s locally
-        uses: jupyterhub/action-k3s-helm@v3
+        uses: jupyterhub/action-k3s-helm@v2
         with:
           k3s-version: v1.19.16+k3s1  # releases: https://github.com/k3s-io/k3s/tags; must use 1.19 b/c of CVMFS-CSI
           metrics-enabled: false
