@@ -34,9 +34,9 @@ rsync -aP $LOCAL_CVMFS_PATH/config /partial/cvmfs/cloud.galaxyproject.org/
 
 printf "\nCreate archives"
 mkdir -p /mnt/archives/ && \
-(cd $LOCAL_CVMFS_PATH/../.. && tar -zcvf /mnt/archives/contents.tar.gz cvmfs/cloud.galaxyproject.org ) && \
-(cd /startup && tar -zcvf /mnt/archives/startup.tar.gz cvmfs/cloud.galaxyproject.org ) && \
-(cd /partial && tar -zcvf /mnt/archives/partial.tar.gz cvmfs/cloud.galaxyproject.org )
+(cd $LOCAL_CVMFS_PATH && tar -zcvf /mnt/archives/contents.tar.gz * ) && \
+(cd /startup/cvmfs/cloud.galaxyproject.org && tar -zcvf /mnt/archives/startup.tar.gz * ) && \
+(cd /partial/cvmfs/cloud.galaxyproject.org && tar -zcvf /mnt/archives/partial.tar.gz * )
 
 printf "\nCopy files to GCP bucket"
 gsutil -m rsync -r -d /mnt/archives/ gs://cloud-cvmfs/
